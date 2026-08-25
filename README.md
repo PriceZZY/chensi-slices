@@ -143,7 +143,7 @@ flowchart LR
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | **Next.js 16** App Router, React 19, TypeScript 5 | Server Components keep the data path on the server; **Server Actions** (17 modules: notes, threads, posts, reactions, links, social, messages, moods, reminders, annotations, account, …) are the only write path to the database from the client |
+| Framework | **Next.js 16** App Router, React 19, TypeScript 5 | Server Components keep the data path on the server; **Server Actions** (17 modules: notes, threads, posts, reactions, links, social, messages, moods, reminders, annotations, account, …) handle all app-data writes; the browser never writes app tables directly — Row Level Security, not the UI, is the security boundary |
 | Modals | Parallel route `@modal` + intercepting routes | Capture, promote-to-thread and thread detail open *over* the current page on client navigation and still work as full pages on a hard load |
 | Styling | Tailwind CSS 4 with a token-only palette | The art system is enforceable: components may only use tokens, so light/dark is a variable swap |
 | Data | **Supabase Postgres** with Row Level Security | Authorization lives next to the data, not in application code that could be bypassed |
@@ -188,14 +188,14 @@ One command runs the whole gate locally, and CI runs the same gate against a rea
 npm run verify:local:reset
   toolchain preflight (node-path · supabase-version · browser-path · docker-context)
   → runner-contract → db-reset (replay all migrations + seed on an empty DB)
-  → vitest (335 unit tests / 45 files) → lint → build → tsc
-  → e2e (109 Playwright tests / 33 specs, real browser against the freshly reset DB)
+  → vitest (333 unit tests / 44 files) → lint → build → tsc
+  → e2e (119 Playwright tests / 35 specs, real browser against the freshly reset DB)
 ```
 
 - **CI is the same gate, not a lighter one.** The GitHub Actions workflow boots a local Supabase inside the runner and runs `verify:ci:reset` — the identical phases against a real database. `main` is branch-protected, with `verify` as the required status check for pull requests.
 - **Toolchain contract, fail-closed.** Node `24.13.1` (`.nvmrc`), npm `11.8.0` (`packageManager`), Supabase CLI `2.109.1` as an *exact* devDependency. Preflight stops on any mismatch rather than continuing on a "probably fine" version.
 - **Supply-chain boundary.** The only allowed install is `npm ci --ignore-scripts`: lifecycle scripts never run, and the lockfile pins registry URLs and integrity hashes for every package.
-- **Every change ships with its tests.** 106 merged pull requests to date; the full suite is the release gate, not an afterthought.
+- **Every change ships with its tests.** 107 merged pull requests to date; the full suite is the release gate, not an afterthought.
 
 ---
 
@@ -225,11 +225,11 @@ Each folder has its own README with the design notes.
 | | |
 |---|---|
 | Live | [chensi.app](https://chensi.app) — in production since July 2026, on its own domain since August 2026 |
-| Routes | 28 pages + 3 modal intercepts |
+| Routes | 28 pages + 4 modal intercepts |
 | Server-action modules | 17 |
 | Database migrations | 41, forward-only |
-| Tests | 335 unit (vitest) + 109 end-to-end (Playwright) — the release gate, run in full before every release |
-| Merged pull requests | 106 |
+| Tests | 333 unit (vitest) + 119 end-to-end (Playwright) — the release gate, run in full before every release |
+| Merged pull requests | 107 |
 | Languages | 中文 · English (full UI and dictation) |
 
 ---
