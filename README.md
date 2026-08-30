@@ -175,7 +175,7 @@ Other things the database enforces on its own:
 - **Trusted timestamps.** Clients have no column grant on `created_at`; rows are stamped by the database clock. Column-level grants limit writes to the business columns.
 - **Concurrency-safe rate limits.** Posting limits run inside `SECURITY DEFINER` functions that take a `FOR UPDATE` lock on the caller's profile row — two concurrent requests cannot both slip through the window.
 - **Frozen reactions.** A `BEFORE UPDATE` trigger pins a reaction's identity and target columns, so a row cannot be re-pointed at another thread or response.
-- **Forward-only migrations.** 41 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
+- **Forward-only migrations.** 45 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
 - **Your data is yours.** One-click export of everything; self-service account deletion that removes everything at once; zero tracking cookies.
 
 ---
@@ -188,14 +188,14 @@ One command runs the whole gate locally, and CI runs the same gate against a rea
 npm run verify:local:reset
   toolchain preflight (node-path · supabase-version · browser-path · docker-context)
   → runner-contract → db-reset (replay all migrations + seed on an empty DB)
-  → vitest (333 unit tests / 44 files) → lint → build → tsc
+  → vitest (393 unit tests / 46 files) → lint → build → tsc
   → e2e (119 Playwright tests / 35 specs, real browser against the freshly reset DB)
 ```
 
 - **CI is the same gate, not a lighter one.** The GitHub Actions workflow boots a local Supabase inside the runner and runs `verify:ci:reset` — the identical phases against a real database. `main` is branch-protected, with `verify` as the required status check for pull requests.
 - **Toolchain contract, fail-closed.** Node `24.13.1` (`.nvmrc`), npm `11.8.0` (`packageManager`), Supabase CLI `2.109.1` as an *exact* devDependency. Preflight stops on any mismatch rather than continuing on a "probably fine" version.
 - **Supply-chain boundary.** The only allowed install is `npm ci --ignore-scripts`: lifecycle scripts never run, and the lockfile pins registry URLs and integrity hashes for every package.
-- **Every change ships with its tests.** 107 merged pull requests to date; the full suite is the release gate, not an afterthought.
+- **Every change ships with its tests.** 109 merged pull requests to date; the full suite is the release gate, not an afterthought.
 
 ---
 
@@ -225,12 +225,23 @@ Each folder has its own README with the design notes.
 | | |
 |---|---|
 | Live | [chensi.app](https://chensi.app) — in production since July 2026, on its own domain since August 2026 |
-| Routes | 28 pages + 4 modal intercepts |
-| Server-action modules | 17 |
-| Database migrations | 41, forward-only |
-| Tests | 333 unit (vitest) + 119 end-to-end (Playwright) — the release gate, run in full before every release |
-| Merged pull requests | 107 |
+| Routes | 32 pages + 3 modal intercepts |
+| Server-action modules | 19 |
+| Database migrations | 45, forward-only |
+| Tests | 393 unit (vitest) + 147 end-to-end (Playwright) — the release gate, run in full before every release |
+| Merged pull requests | 109 |
 | Languages | 中文 · English (full UI and dictation) |
+
+<sub><b>Where these numbers come from.</b> Counted from the private product repository at
+commit <code>03e243f</code> (2026-08-30), not hand-maintained:
+routes and modal intercepts from <code>src/app/**/page.tsx</code>;
+server-action modules from <code>src/lib/actions/*.ts</code>;
+migrations from <code>supabase/migrations/*.sql</code>;
+test counts read straight off <code>EXPECTED_COUNTS</code> in <code>scripts/verify-local.mjs</code>
+(pinned a second time in <code>verify-local.test.mjs</code>, so the constant cannot drift silently),
+which the release gate itself asserts against the real run — if the counts drift, the gate fails.
+Merged-PR count is from the repository's GitHub history.
+Numbers are refreshed on product releases, so they trail the live app by at most one release.</sub>
 
 ---
 

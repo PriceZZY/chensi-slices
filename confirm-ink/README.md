@@ -1,5 +1,10 @@
 # confirmInk — 纸墨风格的应用内确认弹窗
 
+> **这份切片是用来读的，不是用来跑的。** 两个文件（`confirmInk.tsx` / `shellInert.ts`）是从产品仓
+> 原样摘出来的源码，依赖 React 19 与产品的样式 token，单独 `npm install` 跑不起来 —— 放在这里是为了
+> 让人看清楚「一个命令式 `await` 弹窗 + 焦点陷阱 + 浮层仲裁」是怎么写的。
+> 想直接看效果的，隔壁 [`starmap-physics/`](../starmap-physics) 是个双击就能开的单文件 HTML。
+
 浏览器自带的 `confirm()` 是一个黑色系统框，跟产品气质完全不搭。这是替代品：一个命令式 API 的应用内确认层。
 
 ```tsx
