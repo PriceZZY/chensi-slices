@@ -132,7 +132,7 @@ flowchart LR
     Proxy["proxy.ts — refreshes the auth session on every request"]
   end
   subgraph Supabase["Supabase · ca-central-1"]
-    PG["Postgres<br/>41 forward-only migrations<br/>RLS is the authorization layer"]
+    PG["Postgres<br/>58 forward-only migrations<br/>RLS is the authorization layer"]
     Auth["Auth (GoTrue)<br/>+ Cloudflare Turnstile on sign-up / login / recovery"]
     Store["Storage<br/>avatars · post-images"]
   end
@@ -175,7 +175,7 @@ Other things the database enforces on its own:
 - **Trusted timestamps.** Clients have no column grant on `created_at`; rows are stamped by the database clock. Column-level grants limit writes to the business columns.
 - **Concurrency-safe rate limits.** Posting limits run inside `SECURITY DEFINER` functions that take a `FOR UPDATE` lock on the caller's profile row — two concurrent requests cannot both slip through the window.
 - **Frozen reactions.** A `BEFORE UPDATE` trigger pins a reaction's identity and target columns, so a row cannot be re-pointed at another thread or response.
-- **Forward-only migrations.** 45 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
+- **Forward-only migrations.** 58 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
 - **Your data is yours.** One-click export of everything; self-service account deletion that removes everything at once; zero tracking cookies.
 
 ---
@@ -225,15 +225,15 @@ Each folder has its own README with the design notes.
 | | |
 |---|---|
 | Live | [chensi.app](https://chensi.app) — in production since July 2026, on its own domain since August 2026 |
-| Routes | 32 pages + 3 modal intercepts |
-| Server-action modules | 19 |
-| Database migrations | 45, forward-only |
-| Tests | 393 unit (vitest) + 147 end-to-end (Playwright) — the release gate, run in full before every release |
+| Routes | 33 pages (3 of them modal intercepts) |
+| Server-action modules | 21 |
+| Database migrations | 58, forward-only |
+| Tests | 833 unit (vitest) + 167 end-to-end (Playwright) — the release gate, run in full before every release |
 | Merged pull requests | 109 |
 | Languages | 中文 · English (full UI and dictation) |
 
 <sub><b>Where these numbers come from.</b> Counted from the private product repository at
-commit <code>03e243f</code> (2026-08-30), not hand-maintained:
+commit <code>a5aec17</code> (2026-08-31), not hand-maintained:
 routes and modal intercepts from <code>src/app/**/page.tsx</code>;
 server-action modules from <code>src/lib/actions/*.ts</code>;
 migrations from <code>supabase/migrations/*.sql</code>;
