@@ -4,7 +4,7 @@
 
 <h1 align="center">沉思 · Chensi</h1>
 <p align="center"><strong>A quiet place to write to yourself.</strong><br>
-Quick capture for fleeting thoughts · a star map where <em>position is visibility</em> · a community with no comment section.</p>
+Quick capture for fleeting thoughts · a star map where <em>position is visibility</em> · a community where responses are written once, with care.</p>
 
 <p align="center">
   <a href="https://chensi.app"><strong>chensi.app</strong></a> · live since July 2026 · bilingual 中 / EN · light & dark · PWA<br>
@@ -24,7 +24,7 @@ Chensi is built around one path, from a fleeting thought to a settled one:
 1. **Capture.** A thought flashes by — jot it down (typing or bilingual dictation). It lands in an inbox only you can see.
 2. **Drift.** Each note becomes a star on your **idea star map**. Where a star sits *is* its visibility: drag it into *Only me*, *Friends*, or *Open plaza* and the database changes with it.
 3. **Shape.** When you have thought it through — or want company thinking — promote a note into a thread: answer yourself, or open it to the community.
-4. **Respond.** There is no comment section. Others may write one considered *response* each, standing alone as its own piece. The author stamps the ones that carried weight in cinnabar.
+4. **Respond.** The comment section is redesigned: others may write one considered *response* each, standing alone as its own piece, and follow-ups open only after the author replies. The author stamps the ones that carried weight in cinnabar.
 5. **Close.** In the end the author writes the closing words and closes the thread by hand. It is a ritual, not something the system does for you.
 
 ---
@@ -107,11 +107,11 @@ Same product, one column. Layout and the star map both adapt; the capture button
 
 ## Design decisions
 
-**No comment section.** Comment sections teach everyone to snatch the mic. A thought one person has worked through deserves another person writing a full, considered response — so there are responses, one per person per thread, and nothing else. No follows-as-status, no follower counts, no trending.
+**The comment section, redesigned.** Comment sections teach everyone to snatch the mic. A thought one person has worked through deserves another person writing a full, considered response — so responses are one per person per thread, and follow-ups open only after the author replies. No follows-as-status, no follower counts.
 
 **Position is visibility.** Instead of a dropdown, the star map has three ink pools. Dragging a star into *Friends* is a real write to the database, guarded by an in-app confirmation that can be turned off per device. The metaphor and the data model are the same thing.
 
-**Three stamps are the only public reactions on a thread.** Readers can stamp a thread; authors can stamp a response. Counts are public, who stamped is private. There is no downvote, no like leaderboard, no trending.
+**Three stamps are the only public reactions on a thread.** Readers can stamp a thread; authors can stamp a response. Counts are public, who stamped is private. There is no downvote, no like leaderboard.
 
 **Closing is a ritual.** A thread ends when the author writes closing words. The system never closes one for you.
 
@@ -247,8 +247,8 @@ Numbers are refreshed on product releases, so they trail the live app by at most
 
 ## Where Chensi stands
 
-- No comment section — others may only write one considered response.
-- No recommendations driven by other people's behaviour; ranking uses only your own traces. No like leaderboards, no trending.
+- Responses, not comments — one considered response per person; follow-ups open only after the author replies.
+- No recommendations driven by other people's behaviour; ranking uses only your own traces. No like leaderboards.
 - Zero tracking cookies. Export everything. Delete your account yourself, instantly.
 
 ---
