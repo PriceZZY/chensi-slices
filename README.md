@@ -132,7 +132,7 @@ flowchart LR
     Proxy["proxy.ts — refreshes the auth session on every request"]
   end
   subgraph Supabase["Supabase · ca-central-1"]
-    PG["Postgres<br/>58 forward-only migrations<br/>RLS is the authorization layer"]
+    PG["Postgres<br/>96 forward-only migrations<br/>RLS is the authorization layer"]
     Auth["Auth (GoTrue)<br/>+ Cloudflare Turnstile on sign-up / login / recovery"]
     Store["Storage<br/>avatars · post-images"]
   end
@@ -143,7 +143,7 @@ flowchart LR
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | **Next.js 16** App Router, React 19, TypeScript 5 | Server Components keep the data path on the server; **Server Actions** (17 modules: notes, threads, posts, reactions, links, social, messages, moods, reminders, annotations, account, …) handle all app-data writes; the browser never writes app tables directly — Row Level Security, not the UI, is the security boundary |
+| Framework | **Next.js 16** App Router, React 19, TypeScript 5 | Server Components keep the data path on the server; **Server Actions** (28 modules: notes, threads, posts, reactions, links, social, messages, moods, reminders, quotes, account, …) handle all app-data writes; the browser never writes app tables directly — Row Level Security, not the UI, is the security boundary |
 | Modals | Parallel route `@modal` + intercepting routes | Capture, promote-to-thread and thread detail open *over* the current page on client navigation and still work as full pages on a hard load |
 | Styling | Tailwind CSS 4 with a token-only palette | The art system is enforceable: components may only use tokens, so light/dark is a variable swap |
 | Data | **Supabase Postgres** with Row Level Security | Authorization lives next to the data, not in application code that could be bypassed |
@@ -175,7 +175,7 @@ Other things the database enforces on its own:
 - **Trusted timestamps.** Clients have no column grant on `created_at`; rows are stamped by the database clock. Column-level grants limit writes to the business columns.
 - **Concurrency-safe rate limits.** Posting limits run inside `SECURITY DEFINER` functions that take a `FOR UPDATE` lock on the caller's profile row — two concurrent requests cannot both slip through the window.
 - **Frozen reactions.** A `BEFORE UPDATE` trigger pins a reaction's identity and target columns, so a row cannot be re-pointed at another thread or response.
-- **Forward-only migrations.** 58 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
+- **Forward-only migrations.** 96 numbered migrations; a shipped migration is never edited or "repaired". Fixes are new migrations, and every quality gate replays the full chain from an empty database first.
 - **Your data is yours.** One-click export of everything; self-service account deletion that removes everything at once; zero tracking cookies.
 
 ---
@@ -188,8 +188,8 @@ One command runs the whole gate locally, and CI runs the same gate against a rea
 npm run verify:local:reset
   toolchain preflight (node-path · supabase-version · browser-path · docker-context)
   → runner-contract → db-reset (replay all migrations + seed on an empty DB)
-  → vitest (393 unit tests / 46 files) → lint → build → tsc
-  → e2e (119 Playwright tests / 35 specs, real browser against the freshly reset DB)
+  → vitest (3,024 unit tests / 227 files) → lint → build → tsc
+  → e2e (540 Playwright tests / 98 specs, real browser against the freshly reset DB)
 ```
 
 - **CI is the same gate, not a lighter one.** The GitHub Actions workflow boots a local Supabase inside the runner and runs `verify:ci:reset` — the identical phases against a real database. `main` is branch-protected, with `verify` as the required status check for pull requests.
@@ -225,20 +225,20 @@ Each folder has its own README with the design notes.
 | | |
 |---|---|
 | Live | [chensi.app](https://chensi.app) — in production since July 2026, on its own domain since August 2026 |
-| Routes | 33 pages (3 of them modal intercepts) |
-| Server-action modules | 21 |
-| Database migrations | 58, forward-only |
-| Tests | 833 unit (vitest) + 167 end-to-end (Playwright) — the release gate, run in full before every release |
+| Routes | 40 pages (3 of them modal intercepts) |
+| Server-action modules | 28 |
+| Database migrations | 96, forward-only |
+| Tests | 3,024 unit (vitest) + 540 end-to-end (Playwright) — the release gate, run in full before every release |
 | Merged pull requests | 109 |
 | Languages | 中文 · English (full UI and dictation) |
 
 <sub><b>Where these numbers come from.</b> Counted from the private product repository at
-commit <code>a5aec17</code> (2026-08-31), not hand-maintained:
+commit <code>c5dee21</code> (2026-09-08), not hand-maintained:
 routes and modal intercepts from <code>src/app/**/page.tsx</code>;
 server-action modules from <code>src/lib/actions/*.ts</code>;
 migrations from <code>supabase/migrations/*.sql</code>;
-test counts read straight off <code>EXPECTED_COUNTS</code> in <code>scripts/verify-local.mjs</code>
-(pinned a second time in <code>verify-local.test.mjs</code>, so the constant cannot drift silently),
+test counts read straight off <code>EXPECTED_COUNTS</code> in <code>scripts/expected-counts.mjs</code>
+— the single definition the release gate imports (a guard test checks for duplicate literal definitions),
 which the release gate itself asserts against the real run — if the counts drift, the gate fails.
 Merged-PR count is from the repository's GitHub history.
 Numbers are refreshed on product releases, so they trail the live app by at most one release.</sub>
